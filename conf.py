@@ -1,5 +1,5 @@
 # MySQL configuration variables
 MYSQL_HOST = 'localhost'
-MYSQL_USER = 'root'
-MYSQL_PASSWORD = 'zQLLBXLi8Q'
-MYSQL_DB = 'emp'
+MYSQL_USER = 'user'
+MYSQL_PASSWORD = 'password'
+MYSQL_DB = 'database'

@@ -1,4 +1,6 @@
 from flask import Flask, jsonify, Response, request
+import datetime
+
 app = Flask(__name__)
 
 from dbhandler import DatabaseConnection
@@ -130,6 +132,8 @@ def get_rooms():
 
 @app.route('/api/reserve', methods=['POST'])
 def make_reservation():
+	now = datetime.datetime.now()
+
 	connection.connect()
 
 	roomID = request.args.get('room', default = -1, type = int)
@@ -141,7 +145,19 @@ def make_reservation():
 	""".format(roomID)
 	data = connection.execute_query(query)
 
-	message = "ERROR"
+	dateFromObj = datetime.datetime.strptime(dateFrom, '%d.%m.%Y')
+	dateToObj = datetime.datetime.strptime(dateTo, '%d.%m.%Y')
+	dateNowObj = datetime.datetime.strptime('{}.{}.{}'.format(now.day, now.month, now.year), '%d.%m.%Y')
+
+	if dateFromObj == dateToObj:
+		return "Same date was chosen."
+
+	elif dateFromObj < dateNowObj or dateToObj < dateNowObj or dateToObj < dateFromObj:
+		return "Wrong date was chosen."
+
+	# return '{}.{}.{}'.format(dateFromObj.day, dateFromObj.month, dateFromObj.year)
+
+	message = "Room already reserved."
 	if len(data) == 0:
 		query = """
 			INSERT INTO Reservation (dateFrom, dateTo, roomID) VALUES (STR_TO_DATE('{}', "%d.%m.%Y"), STR_TO_DATE('{}', "%d.%m.%Y"), {})
